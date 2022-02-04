@@ -15,7 +15,12 @@ function build(){
 	configfile=$(pwd)'/.pdsite.yml'
 	theme=$(cat $configfile | grep '^theme:' | sed 's|^theme:\s*\(.*\)$|\1|')
 	inputextension=$(cat $configfile | grep '^inputextension:' | sed 's|^inputextension:\s*\(.*\)$|\1|')
+	inputfolder=$(cat $configfile | grep '^inputfolder:' | sed 's|^inputfolder:\s*\(.*\)$|\1|')
 	outputfolder=$(cat $configfile | grep '^outputfolder:' | sed 's|^outputfolder:\s*\(.*\)$|\1|')
+    outputfolder=$(realpath $outputfolder)
+
+    pushd "$inputfolder"
+
 	[ "$theme" ] && [ "$inputextension" ] && [ "$outputfolder" ] || {
 	    echo "ERROR: Missing config variables in .pdsite.yml" 1>&2
 	    exit 1
@@ -131,6 +136,8 @@ function build(){
     find -not -path "./template.html" -type f -exec cp {} "$outputfolder"/{} \;
 
     echo " done."
+
+    popd
 }
 
 function serve(){
